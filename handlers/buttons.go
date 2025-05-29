@@ -12,7 +12,7 @@ import (
 func (h *TelegramHandler) GenerateVPNConfig(c telebot.Context) error {
 	user := c.Sender()
 	conf := config.Load()
-	h.Logger.Println("Generate vpn config from user: %d - %s", user.ID, user.Username)
+	h.Logger.Printf("Generate vpn config from user: %d - %s\n", user.ID, user.Username)
 
 	configName := fmt.Sprintf("client_%d.conf", user.ID)
 	privateKey, err := exec.Command("wg", "genkey").Output()
