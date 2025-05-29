@@ -30,7 +30,7 @@ func main() {
 	if err != nil {
 		logger.Fatalf("[ ERROR ] failed to create bot: %v", err)
 	}
-	tgHandler := handlers.NewTelegramHandler(bot, logger)
+	tgHandler := handlers.NewTelegramHandler(bot, logger, cfg)
 	tgHandler.RegisterHandlers()
 	logger.Println("starting bot...")
 	bot.Start()
