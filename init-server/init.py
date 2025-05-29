@@ -24,18 +24,19 @@ def generate_keys():
     os.makedirs('/etc/wireguard', exist_ok=True)
 
     privKey = subprocess.run(['wg', 'genkey'], capture_output=True, text=True).stdout.split()
-    subprocess.run('echo', f'\"{privKey}\"', '>', '/etc/wireguard/privatekey')
+    subprocess.run(['echo', f'\"{privKey[0]}\"', '>', '/etc/wireguard/privatekey'])
 
-    pubKey = subprocess.run(['wg', 'pubkey'], capture_output=True, text=True).stdout.split()
-    subprocess.run(['echo', f'\"{pubKey}\"', '>', '/etc/wireguard/publickey'], capture_output=True, text=True).stdout.split()
+    pubKey = subprocess.run(['echo', f'\"{privKey}\"', '|','wg', 'pubkey'], capture_output=True, text=True).stdout.split()
+    subprocess.run(['echo', f'\"{pubKey[0]}\"', '>', '/etc/wireguard/publickey'])
     
     print('-- Генерация ключей завершена')
+    return privKey, pubKey
 
-def create_wg0_config():
-    privkey = subprocess.run(['wg', 'genkey'], capture_output=True, text=True).stdout.split()
+def create_wg0_config(privKey):
+    
     print('-- Создание конфигурации wg0...')
     config = f"""[Interface]
-        PrivateKey = {privkey}
+        PrivateKey = {privKey}
         Address = 10.8.0.1/24
         ListenPort = 51820
         PostUp = iptables -A FORWARD -i wg0 -j ACCEPT; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
@@ -59,15 +60,14 @@ def start_wireguard():
 
 def main():
     install_dependecies()
-    generate_keys()
-    create_wg0_config()
+    privkey, pubkey = generate_keys()
+    create_wg0_config(privkey)
     ip_forwarding()
     start_wireguard()
 
-    print(f'\n[*] Инициализация завершена\n --- НЕ ЗАБУДЬТЕ --- \n  1. Написать кофигурацию бота (config/config.yaml), указать IP-адрес и токен бота.\n')
+    print(f'\n[*] Инициализация завершена\nПриватный ключ: {privkey}\nПубличный ключ: {pubkey}\n --- НЕ ЗАБУДЬТЕ --- \n  1. Написать кофигурацию бота (config/config.yaml), указать IP-адрес и токен бота.\n')
 
 if __name__ == '__main__':
     main()
 
-# chmod +x init.py
-# sudo ./init.py
+# sudo python3 init.py
