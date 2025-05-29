@@ -3,13 +3,7 @@ import subprocess
 
 def install_wireguard():
     print('Установка wireguard')
-    try:
-        subprocess.run(["apt", "install", "-y", "wireguard"], check=True)
-    except subprocess.CalledProcessError:
-        print("Обнаружена проблема с DKMS, началась альтернативная установка...")
-        subprocess.run(["add-apt-repository", "-y", "ppa:wireguard/wireguard"], check=True)
-        subprocess.run(["apt", "update"], check=True)
-        subprocess.run(["apt", "install", "-y", "wireguard"], check=True)
+    subprocess.run(['apt-get', 'install', '-y', 'wireguard-tools', 'resolvconf'])
 
 def install_dependecies():
     print('-- Установка зависимостей...')
@@ -29,18 +23,10 @@ def generate_keys():
     print('\t-- Создание директорий')
     os.makedirs('/etc/wireguard', exist_ok=True)
 
-    print('\t-- Генерация приватного ключа')
-    privateKey = subprocess.run(['wg', 'genkey'], capture_output=True, text=True).stdout.strip()
-    with open('/etc/wireguard/privatekey', 'w') as k:
-        k.write(privateKey)
-
-    print('\t-- Генерация публичного ключа')
-    publicKey = subprocess.run(['wg', 'pubkey'], capture_output=True, text=True).stdout.strip()
-    with open('/etc/wireguard/publickey', 'w') as k:
-        k.write(publicKey)
+    print('\t--Генерация ключей')
+    subprocess.run('wg', 'genkey', '|', 'tee', '/etc/wireguard/privatekey', '|', 'wg', 'pubkey', '|', 'tee', '/etc/wireguard/publickey')
     
     print('-- Генерация ключей завершена')
-    return privateKey, publicKey
 
 def create_wg0_config(privkey):
     print('-- Создание конфигурации wg0...')
@@ -74,7 +60,7 @@ def main():
     ip_forwarding()
     start_wireguard()
 
-    print(f'\n[*] Инициализация завершена\n  Публичный ключ: {pub}\n  Приватный ключ: {priv}\n --- НЕ ЗАБУДЬТЕ --- \n  1. Написать кофигурацию бота (config/config.yaml), указать IP-адрес и токен бота.\n')
+    print(f'\n[*] Инициализация завершена\n --- НЕ ЗАБУДЬТЕ --- \n  1. Написать кофигурацию бота (config/config.yaml), указать IP-адрес и токен бота.\n')
 
 if __name__ == '__main__':
     main()
