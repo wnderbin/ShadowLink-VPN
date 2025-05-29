@@ -2,7 +2,7 @@ import os
 import subprocess
 
 def install_wireguard():
-    print('Установка wireguard')
+    print('\t-- Установка wireguard')
     subprocess.run(['apt-get', 'install', '-y', 'wireguard-tools', 'resolvconf'])
 
 def install_dependecies():
@@ -23,12 +23,12 @@ def generate_keys():
     print('\t-- Создание директорий')
     os.makedirs('/etc/wireguard', exist_ok=True)
 
-    print('\t--Генерация ключей')
-    subprocess.run('wg', 'genkey', '|', 'tee', '/etc/wireguard/privatekey', '|', 'wg', 'pubkey', '|', 'tee', '/etc/wireguard/publickey')
+    subprocess.run(['wg', 'genkey', '|', 'tee', '/etc/wireguard/privatekey', '|', 'wg', 'pubkey', '|', 'tee', '/etc/wireguard/publickey'])
     
     print('-- Генерация ключей завершена')
 
-def create_wg0_config(privkey):
+def create_wg0_config():
+    privkey = subprocess.run(['wg', 'genkey'], capture_output=True, text=True).stdout.split()
     print('-- Создание конфигурации wg0...')
     config = f"""[Interface]
         PrivateKey = {privkey}
@@ -55,7 +55,7 @@ def start_wireguard():
 
 def main():
     install_dependecies()
-    pub, priv = generate_keys()
+    generate_keys()
     create_wg0_config()
     ip_forwarding()
     start_wireguard()
