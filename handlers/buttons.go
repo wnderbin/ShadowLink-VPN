@@ -47,7 +47,3 @@ func (h *TelegramHandler) GenerateVPNConfig(c telebot.Context) error {
 	file := &telebot.Document{File: telebot.FromDisk(wgConfigPath), FileName: configName}
 	return c.Send(file)
 }
-
-/*func (h *TelegramHandler) GenerateInstructions(c telebot.Context) error {
-
-}*/
