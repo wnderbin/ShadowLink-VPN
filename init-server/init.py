@@ -2,8 +2,14 @@ import os
 import subprocess
 
 def install_wireguard():
-    print('\t-- Установка wireguard')
-    subprocess.run(['apt', 'install', '-y', 'wireguard'])
+    print('Установка wireguard')
+    try:
+        subprocess.run(["apt", "install", "-y", "wireguard"], check=True)
+    except subprocess.CalledProcessError:
+        print("Обнаружена проблема с DKMS, началась альтернативная установка...")
+        subprocess.run(["add-apt-repository", "-y", "ppa:wireguard/wireguard"], check=True)
+        subprocess.run(["apt", "update"], check=True)
+        subprocess.run(["apt", "install", "-y", "wireguard"], check=True)
 
 def install_dependecies():
     print('-- Установка зависимостей...')
