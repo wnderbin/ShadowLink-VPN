@@ -1,6 +1,9 @@
 import os
 import subprocess
-from configparser import ConfigParser
+
+def install_wireguard():
+    print('\t-- Установка wireguard')
+    subprocess.run(['apt', 'install', '-y', 'wireguard'])
 
 def install_dependecies():
     print('-- Установка зависимостей...')
@@ -11,8 +14,7 @@ def install_dependecies():
     print('\t-- Обновление установленных пакетов до последних стабильных версий')
     subprocess.run(['apt', 'upgrade', '-y'])
 
-    print('\t-- Установка wireguard')
-    subprocess.run(['apt', 'install', '-y', 'wireguard'])
+    install_wireguard()
 
     print('-- Установка зависимостей завершена')
 
