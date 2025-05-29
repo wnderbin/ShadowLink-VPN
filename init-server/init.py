@@ -14,18 +14,7 @@ def install_dependecies():
     print('\t-- Установка wireguard')
     subprocess.run(['apt', 'install', '-y', 'wireguard'])
 
-    print('\t-- Установка Golang 1.24.2')
-    subprocess.run(['wget', 'https://go.dev/dl/go1.24.2.linux-amd64.tar.gz'])
-    subprocess.run(['sudo', 'tar', '-C', '/usr/local', '-xzf', 'go1.24.2.linux-amd64.tar.gz'])
-    subprocess.run(['echo', '\'export PATH=$PATH:/usr/local/go/bin\'', '>>', "~/.bashrc"])
-    subprocess.run(['source', '~/.bashrc'])
-
     print('-- Установка зависимостей завершена')
-
-def clone_repository():
-    print('-- Клонирование репозитория...')
-    subprocess.run(['git', 'clone', 'https://github.com/wnderbin/ShadowLink-VPN'])
-    print('-- Клонирование репозитория завершено')
 
 def generate_keys():
     print('-- Генерация ключей wireguard...')
@@ -72,7 +61,6 @@ def start_wireguard():
 
 def main():
     install_dependecies()
-    clone_repository()
     pub, priv = generate_keys()
     create_wg0_config()
     ip_forwarding()
