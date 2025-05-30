@@ -1,9 +1,11 @@
 package handlers
 
 import (
+	"database/sql"
 	"log"
 	"shadowlink/config"
 
+	"github.com/redis/go-redis/v9"
 	"gopkg.in/telebot.v4"
 )
 
@@ -11,13 +13,17 @@ type TelegramHandler struct {
 	Bot    *telebot.Bot
 	Logger *log.Logger
 	Conf   *config.Config
+	DB     *sql.DB
+	RDB    *redis.Client
 }
 
-func NewTelegramHandler(bot *telebot.Bot, logger *log.Logger, cfg *config.Config) *TelegramHandler {
+func NewTelegramHandler(bot *telebot.Bot, logger *log.Logger, cfg *config.Config, db *sql.DB, rdb *redis.Client) *TelegramHandler {
 	return &TelegramHandler{
 		Bot:    bot,
 		Logger: logger,
 		Conf:   cfg,
+		DB:     db,
+		RDB:    rdb,
 	}
 }
 

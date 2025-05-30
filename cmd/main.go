@@ -1,11 +1,14 @@
 package main
 
 import (
+	"database/sql"
 	"shadowlink/config"
 	"shadowlink/handlers"
+	"shadowlink/migrator"
 	"shadowlink/utils"
 	"time"
 
+	"github.com/redis/go-redis/v9"
 	"gopkg.in/natefinch/lumberjack.v2"
 	"gopkg.in/telebot.v4"
 )
@@ -20,6 +23,19 @@ func main() {
 		MaxAge:     7,                // Maximum storage time
 		Compress:   true,             // Compression of old logs
 	})
+
+	db, err := sql.Open("postgres", "postgres://superuser:123@localhost:5432/shadowlink?sslmode=disable")
+	if err != nil {
+		logger.Printf("postgres error: %s\n", err)
+	}
+	migrator.ApplyMigrations(db)
+
+	redisClient := redis.NewClient(&redis.Options{
+		Addr:     "localhost:6379",
+		Password: "",
+		DB:       0,
+	})
+
 	botSettings := telebot.Settings{
 		Token: cfg.BotApiKey,
 		Poller: &telebot.LongPoller{
@@ -30,7 +46,7 @@ func main() {
 	if err != nil {
 		logger.Fatalf("[ ERROR ] failed to create bot: %v", err)
 	}
-	tgHandler := handlers.NewTelegramHandler(bot, logger, cfg)
+	tgHandler := handlers.NewTelegramHandler(bot, logger, cfg, db, redisClient)
 	tgHandler.RegisterHandlers()
 	logger.Println("starting bot...")
 	bot.Start()
