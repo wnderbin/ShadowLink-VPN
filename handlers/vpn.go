@@ -30,7 +30,7 @@ func (h *TelegramHandler) HandleGenerateVPNConfig(c telebot.Context) error {
 	}
 	privateKeyStr := strings.TrimSpace(string(privateKey))
 
-	publicKey, err := exec.Command("wg", "pubkey").Output()
+	publicKey, err := exec.Command("cat", "/etc/wireguard/privkey", "|", "wg pubkey", "|", "tee", "/etc/wireguard/pubkey").Output()
 	if err != nil {
 		h.Logger.Printf("[ ERROR ] public key generation error: %s\n", err)
 		return c.Send("❌ Ошибка генерации публичного ключа")

@@ -1,6 +1,20 @@
 import sys
 import subprocess
 
+# Что необходимо сделать перед запуском скрипта:
+#  * Обновить пакеты и репозитории
+#    apt update && apt upgrade
+#  * Установить wireguard
+#    apt-get install -y wireguard-tools resolvconf
+#  * Сгенерировать ключи
+#    wg genkey | tee /etc/wireguard/privkey > /dev/null
+#    cat /etc/wireguard/privkey | wg pubkey | tee /etc/wireguard/pubkey
+#  * Просмотр ключей:
+#    cat /etc/wireguard/privkey - приватный ключ
+#    cat /etc/wireguard/pubkey - публичный ключ
+#  * Запуск скрипта:
+#    sudo python3 init.py <privkey>
+
 def create_wg0_config(privKey):
     
     print('-- Создание конфигурации wg0...')
