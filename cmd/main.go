@@ -15,7 +15,7 @@ func main() {
 	logger := utils.NewLogger(cfg.DebugMode)
 	logger.SetOutput(&lumberjack.Logger{
 		Filename:   "shadowlink.log", // Log file
-		MaxSize:    100,              // MB
+		MaxSize:    50,               // MB
 		MaxBackups: 10,               // Maximum files for storage
 		MaxAge:     7,                // Maximum storage time
 		Compress:   true,             // Compression of old logs

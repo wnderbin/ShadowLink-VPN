@@ -43,20 +43,24 @@ func (h *TelegramHandler) HandleGenerateVPNConfig(c telebot.Context) error {
 		io.WriteString(stdin, privateKeyStr)
 	}()
 	publicKey, err := cmd.Output()
+	if err != nil {
+		h.Logger.Printf("[ ERROR ] error getting public key: %s\n", err)
+		return c.Send("❌ Ошибка получения публичного ключа")
+	}
 	publicKeyStr := strings.TrimSpace(string(publicKey))
 
 	clientIP := fmt.Sprintf("10.8.0.%d", (user.ID%253)+2)
 
 	wgConfig := fmt.Sprintf(`[Interface]
-PrivateKey = %s
-Address = %s/24
-DNS = %s
+		PrivateKey = %s
+		Address = %s/24
+		DNS = %s
 
-[Peer]
-PublicKey = %s
-Endpoint = %s:%d
-AllowedIPs = %s
-PersistentKeepalive = 25`,
+		[Peer]
+		PublicKey = %s
+		Endpoint = %s:%d
+		AllowedIPs = %s
+		PersistentKeepalive = 25`,
 		privateKeyStr,
 		clientIP,
 		conf.DNS,
