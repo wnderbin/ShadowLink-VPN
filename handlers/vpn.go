@@ -21,7 +21,7 @@ func (h *TelegramHandler) HandleGenerateVPNConfig(c telebot.Context) error {
 		return c.Send("❌ Ошибка создания директории для конфигов")
 	}
 
-	wgConfigName := fmt.Sprintf("client_%d.conf", user.ID)
+	wgConfigName := fmt.Sprintf("wg_%d.conf", user.ID)
 	wgConfigPath := filepath.Join("wg-configs", wgConfigName)
 
 	privateKey, err := exec.Command("wg", "genkey").Output()
