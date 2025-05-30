@@ -23,13 +23,10 @@ def generate_keys():
     print('\t-- Создание директорий')
     os.makedirs('/etc/wireguard', exist_ok=True)
 
-    privKey = subprocess.run(['wg', 'genkey'], capture_output=True, text=True).stdout.split()
-    privkey = privKey[0]
-    subprocess.run(['echo', f'{privkey}', '>', '/etc/wireguard/privatekey'])
-
-    pubKey = subprocess.run(['echo', f'{privkey}', '|','wg', 'pubkey'], capture_output=True, text=True).stdout.split()
-    pubkey = pubKey[0].replace('[', '').replace(']', '').replace('\'', '')
-    subprocess.run(['echo', f'{pubkey}', '>', '/etc/wireguard/publickey'])
+    subprocess.run(['wg', 'genkey', '|','tee', '/etc/wireguard/privatekey'])
+    privkey = subprocess.run(['cat', '/etc/wireguard/privatekey'], capture_output=True, text=True).stdout.split()
+    subprocess.run(['wg', 'pubkey', f'{privkey}', '|', 'tee', '/etc/wireguard/publickey'])
+    pubkey = subprocess.run(['cat', '/etc/wireguard/publickey'])
     
     print('-- Генерация ключей завершена')
     return privkey, pubkey
