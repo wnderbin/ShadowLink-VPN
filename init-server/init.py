@@ -24,13 +24,15 @@ def generate_keys():
     os.makedirs('/etc/wireguard', exist_ok=True)
 
     privKey = subprocess.run(['wg', 'genkey'], capture_output=True, text=True).stdout.split()
-    subprocess.run(['echo', f'{privKey}', '>', '/etc/wireguard/privatekey'])
+    privkey = privKey[0]
+    subprocess.run(['echo', f'{privkey}', '>', '/etc/wireguard/privatekey'])
 
-    pubKey = subprocess.run(['echo', f'{privKey}', '|','wg', 'pubkey'], capture_output=True, text=True).stdout.split()
-    subprocess.run(['echo', f'{pubKey}', '>', '/etc/wireguard/publickey'])
+    pubKey = subprocess.run(['echo', f'{privKey[0]}', '|','wg', 'pubkey'], capture_output=True, text=True).stdout.split()
+    pubkey = pubKey[0].replace('[', '').replace(']', '').replace('\'', '')
+    subprocess.run(['echo', f'{pubkey}', '>', '/etc/wireguard/publickey'])
     
     print('-- Генерация ключей завершена')
-    return privKey, pubKey
+    return privkey, pubkey
 
 def create_wg0_config(privKey):
     
@@ -65,7 +67,7 @@ def main():
     ip_forwarding()
     start_wireguard()
 
-    print(f'\n[*] Инициализация завершена\nПриватный ключ: {privkey[0]}\nПубличный ключ: {pubkey[0]}\n --- НЕ ЗАБУДЬТЕ --- \n  1. Написать кофигурацию бота (config/config.yaml), указать IP-адрес и токен бота.\n')
+    print(f'\n[*] Инициализация завершена\nПриватный ключ: {privkey}\nПубличный ключ: {pubkey}\n --- НЕ ЗАБУДЬТЕ --- \n  1. Написать кофигурацию бота (config/config.yaml), указать IP-адрес и токен бота.\n')
 
 if __name__ == '__main__':
     main()
