@@ -27,7 +27,7 @@ def generate_keys():
     privkey = privKey[0]
     subprocess.run(['echo', f'{privkey}', '>', '/etc/wireguard/privatekey'])
 
-    pubKey = subprocess.run(['echo', f'{privKey[0]}', '|','wg', 'pubkey'], capture_output=True, text=True).stdout.split()
+    pubKey = subprocess.run(['echo', f'{privkey}', '|','wg', 'pubkey'], capture_output=True, text=True).stdout.split()
     pubkey = pubKey[0].replace('[', '').replace(']', '').replace('\'', '')
     subprocess.run(['echo', f'{pubkey}', '>', '/etc/wireguard/publickey'])
     
