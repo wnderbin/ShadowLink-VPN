@@ -52,15 +52,15 @@ func (h *TelegramHandler) HandleGenerateVPNConfig(c telebot.Context) error {
 	clientIP := fmt.Sprintf("10.8.0.%d", (user.ID%253)+2)
 
 	wgConfig := fmt.Sprintf(`[Interface]
-		PrivateKey = %s
-		Address = %s/24
-		DNS = %s
+PrivateKey = %s
+Address = %s/24
+DNS = %s
 
-		[Peer]
-		PublicKey = %s
-		Endpoint = %s:%d
-		AllowedIPs = %s
-		PersistentKeepalive = 25`,
+[Peer]
+PublicKey = %s
+Endpoint = %s:%d
+AllowedIPs = %s
+PersistentKeepalive = 25`,
 		privateKeyStr,
 		clientIP,
 		conf.DNS,
