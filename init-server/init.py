@@ -1,4 +1,4 @@
-import os
+import sys
 import subprocess
 
 def create_wg0_config(privKey):
@@ -28,7 +28,7 @@ def start_wireguard():
     print('-- Запуск завершен')
 
 def main():
-    privkey = input('Enter private key: ')
+    privkey = sys.argv[1]
     create_wg0_config(privkey)
     ip_forwarding()
     start_wireguard()
