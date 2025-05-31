@@ -1,18 +1,59 @@
 package handlers
 
 import (
+	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"gopkg.in/telebot.v4"
 )
 
-func (h *TelegramHandler) HandleGenerateVPNConfig(c telebot.Context) error {
+func (h *TelegramHandler) HandleVPNConfig(c telebot.Context) error {
+	var filename string
 	user := c.Sender()
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
+	defer cancel()
+	if err := c.Notify(telebot.Typing); err != nil {
+		h.Logger.Printf("[ ERROR ] Failed to send typing action %d %s: %v\n", user.ID, user.Username, err)
+	}
+	err := h.DB.QueryRowContext(ctx, "SELECT filename FROM wgconfigs WHERE user_id = $1", user.ID).Scan(&filename)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			h.Logger.Printf("Creating a configuration for a user: %d %s", user.ID, user.Username)
+			c.Send("🔧 Пользователь не зарегистрирован, создание конфигурации...")
+			return h.generateVPNConfig(c, user)
+		}
+		h.Logger.Printf("[ ERROR ] QueryRowContext error: \"%s\" | User %d %s", err, user.ID, user.Username)
+		return c.Send("❌ Ошибка базы данных")
+	}
+	h.Logger.Printf("Sending an existing configuration file to a user: %d %s", user.ID, user.Username)
+	c.Send("✅ Пользователь зарегистрирован, отправка конфигурации...")
+	return h.getVPNConfig(c, filename)
+}
+
+func (h *TelegramHandler) saveConfig(ctx context.Context, id int64, filepath string) error {
+	_, err := h.DB.ExecContext(ctx,
+		"INSERT INTO wgconfigs (user_id, filename) VALUES ($1, $2)", id, filepath)
+	return err
+}
+
+func (h *TelegramHandler) getVPNConfig(c telebot.Context, configName string) error {
+	file := &telebot.Document{
+		File:     telebot.FromDisk(filepath.Join("wg-configs", configName)),
+		FileName: configName,
+		MIME:     "text/plain",
+	}
+	return c.Send(file)
+}
+
+func (h *TelegramHandler) generateVPNConfig(c telebot.Context, user *telebot.User) error {
 	conf := h.Conf
 	h.Logger.Printf("Generate vpn config from user: %d - %s\n", user.ID, user.Username)
 
@@ -23,6 +64,9 @@ func (h *TelegramHandler) HandleGenerateVPNConfig(c telebot.Context) error {
 
 	wgConfigName := fmt.Sprintf("wg_%d.conf", user.ID)
 	wgConfigPath := filepath.Join("wg-configs", wgConfigName)
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
+	defer cancel()
+	h.saveConfig(ctx, user.ID, wgConfigName)
 
 	privateKey, err := exec.Command("wg", "genkey").Output()
 	if err != nil {

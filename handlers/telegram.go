@@ -30,5 +30,5 @@ func NewTelegramHandler(bot *telebot.Bot, logger *log.Logger, cfg *config.Config
 func (h *TelegramHandler) RegisterHandlers() { // Registers command and message handlers
 	h.Bot.Handle("/start", h.HandleStart)
 	h.Bot.Handle("/help", h.HandleHelp)
-	h.Bot.Handle("/vpn", h.HandleGenerateVPNConfig)
+	h.Bot.Handle("/vpn", h.HandleVPNConfig)
 }
