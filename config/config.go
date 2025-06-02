@@ -17,6 +17,10 @@ type Config struct {
 	ServerPublicKey string `yaml:"ServerPublicKey"`
 	AllowedIPs      string `yaml:"AllowedIPs"`
 	DNS             string `yaml:"DNS"`
+	DB              string `yaml:"DB"`
+	RedisHost       string `yaml:"Redis-host"`
+	RedisPass       string `yaml:"Redis-pass"`
+	RedisDB         int    `yaml:"Redis-DB"`
 }
 
 func Load() *Config {

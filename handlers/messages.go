@@ -1,9 +1,9 @@
 package handlers
 
 func (h *TelegramHandler) messageStart() string {
-	return "start message"
+	return "<b>Приветствую, пользователь! 👋</b>\n\n"
 }
 
 func (h *TelegramHandler) messageHelp() string {
-	return "help message"
+	return "<b>📑 Помощь</b>"
 }

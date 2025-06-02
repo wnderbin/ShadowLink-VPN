@@ -46,6 +46,10 @@ ServerPort: <WIREGUARD PORT | default: 51820>
 ServerPublicKey: "<PUBLIC-KEY FROM /etc/wireguard/pubkey>" 
 AllowedIPs: "0.0.0.0/0, ::/0" 
 DNS: "<ANY-DNS-SERVER | 1.1.1.1 or 8.8.8.8>"
+DB: "postgres://<user>:<pass>@<host>:<port>/<dbname>?sslmode=<disable/enable>"
+Redis-host: "<host>:<port>"
+Redis-pass: "<redis-password from redis.conf>"
+Redis-DB: <redis-db>
 ```
 
 Now you need to perform ip-forwarding for stable VPN operation.
@@ -103,7 +107,7 @@ sudo python3 wg_init.py <YOUR-PRIVATE-KEY>
 
 Далее необходимо установить Golang: [Download and install](https://go.dev/doc/install)
 
-После установки необходимо создать в каталоге config конфигурацию проекта config.yaml. Она должна выглядеть так:
+После установки необходимо создать в каталоге config конфигурацию проекта config.yaml. Конфигурация должна выглядеть так:
 
 ```
 BOT-API-KEY: "<ТОКЕН-ТЕЛЕГРАМ-БОТА>"
@@ -115,6 +119,10 @@ ServerPort: <ПОРТ WIREGUARD | по умолчанию: 51820>
 ServerPublicKey: "<ПУБЛИЧНЫЙ КЛЮЧ ИЗ ФАЙЛА /etc/wireguard/pubkey>" 
 AllowedIPs: "0.0.0.0/0, ::/0" 
 DNS: "<ЛЮБОЙ DNS-СЕРВЕР | 1.1.1.1 or 8.8.8.8>"
+DB: "postgres://<user>:<pass>@<host>:<port>/<dbname>?sslmode=<disable/enable>"
+Redis-host: "<host>:<port>"
+Redis-pass: "<redis-password from redis.conf>"
+Redis-DB: <redis-db>
 ```
 
 Теперь необходимо выполнить ip-переадресацию для стабильной работы VPN.

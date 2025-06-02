@@ -16,8 +16,24 @@ import (
 )
 
 func (h *TelegramHandler) HandleVPNConfig(c telebot.Context) error {
-	var filename string
 	user := c.Sender()
+
+	allowed, waitTime, err := h.checkRateLimitVPN(user.ID)
+	if err != nil {
+		h.Logger.Printf("[ ERROR ] redis error for user (vpn-delay): %d %s", user.ID, user.Username)
+		return h.processVPN(c, user)
+	}
+	if !allowed {
+		minutes := int(waitTime.Seconds()) / 60
+		seconds := int(waitTime.Seconds()) % 60
+		h.Logger.Printf("redis wait time for user: %d %s - %d minutes %d seconds", user.ID, user.Username, minutes, seconds)
+		return c.Send("⏳ Пожалуйста, подождите %d минут и %d секунд", minutes, seconds)
+	}
+	return h.processVPN(c, user)
+}
+
+func (h *TelegramHandler) processVPN(c telebot.Context, user *telebot.User) error {
+	var filename string
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
 	defer cancel()
 	if err := c.Notify(telebot.Typing); err != nil {

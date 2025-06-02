@@ -24,16 +24,16 @@ func main() {
 		Compress:   true,             // Compression of old logs
 	})
 
-	db, err := sql.Open("postgres", "postgres://superuser:123@localhost:5432/shadowlink?sslmode=disable")
+	db, err := sql.Open("postgres", cfg.DB)
 	if err != nil {
 		logger.Printf("postgres error: %s\n", err)
 	}
 	migrator.ApplyMigrations(db)
 
 	redisClient := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "",
-		DB:       0,
+		Addr:     cfg.RedisHost,
+		Password: cfg.RedisPass,
+		DB:       cfg.RedisDB,
 	})
 
 	botSettings := telebot.Settings{

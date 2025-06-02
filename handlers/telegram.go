@@ -4,26 +4,31 @@ import (
 	"database/sql"
 	"log"
 	"shadowlink/config"
+	"time"
 
 	"github.com/redis/go-redis/v9"
 	"gopkg.in/telebot.v4"
 )
 
 type TelegramHandler struct {
-	Bot    *telebot.Bot
-	Logger *log.Logger
-	Conf   *config.Config
-	DB     *sql.DB
-	RDB    *redis.Client
+	Bot      *telebot.Bot
+	Logger   *log.Logger
+	Conf     *config.Config
+	DB       *sql.DB
+	RDB      *redis.Client
+	ComDelay time.Duration
+	VPNDelay time.Duration
 }
 
 func NewTelegramHandler(bot *telebot.Bot, logger *log.Logger, cfg *config.Config, db *sql.DB, rdb *redis.Client) *TelegramHandler {
 	return &TelegramHandler{
-		Bot:    bot,
-		Logger: logger,
-		Conf:   cfg,
-		DB:     db,
-		RDB:    rdb,
+		Bot:      bot,
+		Logger:   logger,
+		Conf:     cfg,
+		DB:       db,
+		RDB:      rdb,
+		ComDelay: 5 * time.Second,
+		VPNDelay: 5 * time.Minute,
 	}
 }
 
