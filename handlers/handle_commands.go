@@ -1,6 +1,10 @@
 package handlers
 
-import "gopkg.in/telebot.v4"
+import (
+	"fmt"
+
+	"gopkg.in/telebot.v4"
+)
 
 func (h *TelegramHandler) HandleStart(c telebot.Context) error {
 	return c.Send(h.messageStart(), telebot.ModeHTML)
@@ -15,7 +19,7 @@ func (h *TelegramHandler) HandleHelp(c telebot.Context) error {
 	}
 	if !allowed {
 		h.Logger.Printf("redis waite time for user: %d %s - %d seconds", user.ID, user.Username, int(waitTime.Seconds()))
-		return c.Send("⏳ Пожалуйста, подождите %d секунд перед отправкой следующего запроса", waitTime.Seconds())
+		return c.Send(fmt.Sprintf("⏳ Пожалуйста, подождите %d секунд перед отправкой следующего запроса", int(waitTime.Seconds())))
 	}
 	return c.Send(h.messageHelp(), telebot.ModeHTML)
 }
