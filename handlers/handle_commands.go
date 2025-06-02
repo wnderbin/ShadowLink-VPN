@@ -14,7 +14,7 @@ func (h *TelegramHandler) HandleStart(c telebot.Context) error {
 		return c.Send(h.messageStart(), telebot.ModeHTML)
 	}
 	if !allowed {
-		h.Logger.Printf("redis waite time for user: %d %s - %d seconds", user.ID, user.Username, int(waitTime.Seconds()))
+		h.Logger.Printf("redis wait time for user: %d %s - %d seconds", user.ID, user.Username, int(waitTime.Seconds()))
 		return c.Send(fmt.Sprintf("⏳ Пожалуйста, подождите %d секунд перед отправкой следующего запроса", int(waitTime.Seconds())))
 	}
 	return c.Send(h.messageStart(), telebot.ModeHTML)
