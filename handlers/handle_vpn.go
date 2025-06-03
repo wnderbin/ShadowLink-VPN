@@ -37,7 +37,7 @@ func (h *TelegramHandler) processVPN(c telebot.Context, user *telebot.User) erro
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
 	defer cancel()
 	if err := c.Notify(telebot.Typing); err != nil {
-		h.Logger.Printf("[ ERROR ] Failed to send typing action %d %s: %v\n", user.ID, user.Username, err)
+		h.Logger.Printf("[ ERROR ] failed to send typing action %d %s: %v\n", user.ID, user.Username, err)
 	}
 	err := h.DB.QueryRowContext(ctx, "SELECT filename FROM wgconfigs WHERE user_id = $1", user.ID).Scan(&filename)
 	if err != nil {
